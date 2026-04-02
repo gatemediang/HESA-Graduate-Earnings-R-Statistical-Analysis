@@ -4,7 +4,14 @@
 	<img src="shinny2.png" alt="HESA Graduate Earnings & Occupational Analysis hero image" />
 </p>
 
-**Principal Statistical Analyst Portfolio —  Jisc / HESA**
+<hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 1rem 0;" />
+
+<p align="center">
+	<strong>Principal Statistical Analyst Portfolio — Jisc / HESA</strong>&nbsp;
+	<a href="https://gatemediang.github.io/HESA-Graduate-Earnings-R-Statistical-Analysis/">
+		<img src="https://img.shields.io/badge/Live%20Demo-Open%20Site-1abc9c?style=flat&logo=githubpages&logoColor=white" alt="Live Demo" style="vertical-align: middle;" />
+	</a>
+</p>
 
 A rigorous, end-to-end R analysis linking graduate occupational outcomes (HESA Table 22) to salary distributions (HESA Table 26) across 229 UK higher education providers — culminating in a quantile regression model, interactive Shiny dashboard, and publication-quality outputs.
 
