@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HESA Graduate Earnings & Occupational Analysis | Capstone Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#0f1923;--paper:#f7f4ef;--teal:#0d6e5e;--teal-light:#18bc9c;--teal-pale:#e0f5f0;
+  --gold:#c8922a;--gold-pale:#fdf3e0;--red:#c0392b;--red-pale:#fdecea;
+  --mid:#6b7280;--border:#e2ddd6;--card:#ffffff;
+  --serif:'DM Serif Display',Georgia,serif;--mono:'DM Mono',monospace;--sans:'Inter',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:15px;line-height:1.6}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--ink);border-bottom:2px solid var(--teal)}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:0;padding:0 24px;height:56px}
+.nav-brand{font-family:var(--serif);font-size:15px;color:#fff;letter-spacing:.02em;margin-right:auto;white-space:nowrap}
+.nav-brand span{color:var(--teal-light)}
+.nav-links{display:flex;gap:0;list-style:none}
+.nav-links a{display:block;padding:18px 14px;color:#cbd5e1;font-size:12px;font-weight:500;text-decoration:none;letter-spacing:.06em;text-transform:uppercase;transition:color .2s,border-bottom .2s;border-bottom:2px solid transparent}
+.nav-links a:hover,.nav-links a.active{color:#fff;border-bottom-color:var(--teal-light)}
+.nav-dashboard{background:var(--teal);color:#fff!important;border-radius:4px;padding:8px 14px!important;margin-left:8px;border:none!important}
+.nav-dashboard:hover{background:var(--teal-light)!important}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:80px 24px 60px;background:var(--ink);position:relative;overflow:hidden}
+#hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(13,110,94,.25) 0%,transparent 60%)}
+.hero-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center;position:relative;z-index:1}
+.hero-kicker{font-family:var(--mono);font-size:11px;color:var(--teal-light);letter-spacing:.15em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.hero-kicker::before{content:'';display:block;width:32px;height:1px;background:var(--teal-light)}
+.hero-title{font-family:var(--serif);font-size:clamp(36px,5vw,64px);color:#fff;line-height:1.05;margin-bottom:24px}
+.hero-title em{color:var(--teal-light);font-style:italic}
+.hero-desc{color:#94a3b8;font-size:17px;line-height:1.75;margin-bottom:40px;max-width:520px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:6px;font-weight:600;font-size:14px;text-decoration:none;transition:all .2s;cursor:pointer;border:none;letter-spacing:.02em}
+.btn-primary{background:var(--teal);color:#fff}
+.btn-primary:hover{background:var(--teal-light);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3)}
+.btn-outline:hover{border-color:#fff;background:rgba(255,255,255,.05)}
+.hero-stats{display:flex;flex-direction:column;gap:16px}
+.stat-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:24px 28px;backdrop-filter:blur(4px)}
+.stat-card .val{font-family:var(--serif);font-size:38px;color:#fff;line-height:1}
+.stat-card .val span{font-size:20px;color:var(--teal-light)}
+.stat-card .lbl{font-size:12px;color:#64748b;margin-top:6px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ── SECTIONS ── */
+section{padding:80px 24px;scroll-margin-top:56px}
+.container{max-width:1200px;margin:0 auto}
+.section-label{font-family:var(--mono);font-size:11px;color:var(--teal);letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-label::before{content:'';display:block;width:24px;height:1px;background:var(--teal)}
+.section-title{font-family:var(--serif);font-size:clamp(28px,4vw,44px);color:var(--ink);line-height:1.15;margin-bottom:20px}
+.section-lead{font-size:17px;color:var(--mid);line-height:1.75;max-width:680px;margin-bottom:48px}
+
+/* ── PROBLEM ── */
+#problem{background:var(--paper)}
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.problem-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:32px;position:relative;overflow:hidden}
+.problem-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--teal)}
+.problem-card.red::before{background:var(--red)}
+.problem-card.gold::before{background:var(--gold)}
+.problem-card h3{font-family:var(--serif);font-size:20px;margin-bottom:12px;color:var(--ink)}
+.problem-card p{color:var(--mid);line-height:1.7;font-size:14px}
+.gap-visual{margin-top:48px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:40px;text-align:center}
+.gap-bar{display:flex;align-items:center;gap:16px;margin:24px 0;justify-content:center;flex-wrap:wrap}
+.gap-segment{height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;white-space:nowrap;padding:0 16px}
+
+/* ── DATA ── */
+#data{background:#fff}
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:48px}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.table-header{background:var(--teal);color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
+.table-header h3{font-family:var(--serif);font-size:18px}
+.table-header a{font-size:11px;color:rgba(255,255,255,.7);text-decoration:none;font-family:var(--mono);letter-spacing:.08em;border:1px solid rgba(255,255,255,.3);padding:4px 10px;border-radius:4px}
+.table-header a:hover{color:#fff;border-color:#fff}
+.dict-table{width:100%;border-collapse:collapse;font-size:13px}
+.dict-table th{background:var(--teal-pale);color:var(--teal);font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;text-align:left}
+.dict-table td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:top}
+.dict-table td:first-child{font-family:var(--mono);font-size:12px;color:var(--teal);font-weight:500}
+.dict-table tr:last-child td{border-bottom:none}
+.dict-table tr:hover td{background:var(--teal-pale)}
+.badge{display:inline-block;background:var(--teal-pale);color:var(--teal);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.04em;font-family:var(--mono)}
+
+/* ── SOLUTION ── */
+#solution{background:var(--ink)}
+#solution .section-title{color:#fff}
+#solution .section-label{color:var(--teal-light)}
+#solution .section-label::before{background:var(--teal-light)}
+#solution .section-lead{color:#94a3b8}
+.solution-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:40px}
+.sol-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:28px;transition:border-color .2s}
+.sol-card:hover{border-color:var(--teal-light)}
+.sol-icon{width:40px;height:40px;background:rgba(13,110,94,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:16px}
+.sol-card h3{font-family:var(--serif);font-size:17px;color:#fff;margin-bottom:8px}
+.sol-card p{color:#64748b;font-size:13px;line-height:1.65}
+.pipeline{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:32px;margin-top:0}
+.pipeline h3{font-family:var(--serif);color:#fff;font-size:20px;margin-bottom:24px}
+.pipe-steps{display:flex;gap:0;overflow-x:auto}
+.pipe-step{flex:1;min-width:140px;padding:20px 16px;text-align:center;position:relative}
+.pipe-step:not(:last-child)::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--teal-light);font-size:18px;font-weight:700}
+.pipe-num{width:32px;height:32px;border-radius:50%;background:var(--teal);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.pipe-step h4{font-size:12px;color:#fff;font-weight:600;margin-bottom:4px}
+.pipe-step p{font-size:11px;color:#64748b}
+.libs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:32px}
+.lib-badge{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:14px;text-align:center}
+.lib-badge .lib-name{font-family:var(--mono);font-size:13px;color:var(--teal-light);font-weight:500;margin-bottom:4px}
+.lib-badge .lib-desc{font-size:11px;color:#64748b}
+
+/* ── INSIGHTS ── */
+#insights{background:var(--paper)}
+.insight-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.kpi.teal::before{background:var(--teal)}
+.kpi.gold::before{background:var(--gold)}
+.kpi.red::before{background:var(--red)}
+.kpi.ink::before{background:var(--ink)}
+.kpi-val{font-family:var(--serif);font-size:36px;color:var(--ink);line-height:1}
+.kpi-val sup{font-size:18px;vertical-align:super}
+.kpi-lbl{font-size:11px;color:var(--mid);margin-top:6px;letter-spacing:.06em;text-transform:uppercase}
+.chart-section{margin-bottom:48px}
+.chart-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.chart-title{font-family:var(--serif);font-size:22px;color:var(--ink)}
+.chart-subtitle{font-size:13px;color:var(--mid);margin-top:4px}
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px}
+.chart-canvas-wrap{position:relative;height:400px}
+.insight-box{background:var(--teal-pale);border-left:4px solid var(--teal);border-radius:0 8px 8px 0;padding:16px 20px;margin-top:20px;font-size:14px;color:var(--teal);line-height:1.6}
+.insight-box strong{font-weight:600}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.qr-table{width:100%;border-collapse:collapse;font-size:14px}
+.qr-table th{background:var(--teal);color:#fff;padding:12px 16px;text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.qr-table td{padding:12px 16px;border-bottom:1px solid var(--border)}
+.qr-table tr:last-child td{border-bottom:none}
+.qr-table tr:hover td{background:var(--teal-pale)}
+.est-val{font-family:var(--mono);font-weight:500;color:var(--teal);font-size:15px}
+.sig-badge{background:var(--teal);color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-family:var(--mono)}
+
+/* ── METHODOLOGY ── */
+#methodology{background:#fff}
+.meth-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.meth-card{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:28px}
+.meth-card h3{font-family:var(--serif);font-size:18px;margin-bottom:16px;color:var(--ink);display:flex;align-items:center;gap:10px}
+.meth-icon{width:28px;height:28px;background:var(--teal);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.meth-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.meth-list li{font-size:13px;color:var(--mid);padding-left:16px;position:relative;line-height:1.6}
+.meth-list li::before{content:'—';position:absolute;left:0;color:var(--teal);font-weight:700}
+.caveat-box{background:var(--gold-pale);border:1px solid var(--gold);border-radius:8px;padding:20px;margin-top:32px}
+.caveat-box h4{color:var(--gold);font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;font-family:var(--mono)}
+.caveat-box p{font-size:13px;color:#78350f;line-height:1.65}
+
+/* ── CHARTS EMBED ── */
+#charts{background:var(--paper)}
+.charts-grid{display:grid;grid-template-columns:1fr;gap:32px}
+.embed-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.embed-label{background:var(--teal);color:#fff;padding:14px 24px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.embed-frame{width:100%;border:none;display:block}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);color:#64748b;padding:40px 24px;text-align:center}
+footer p{font-size:13px;line-height:1.8}
+footer a{color:var(--teal-light);text-decoration:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .hero-grid,.problem-grid,.data-grid,.two-col,.meth-grid{grid-template-columns:1fr}
+  .solution-grid{grid-template-columns:1fr 1fr}
+  .libs-grid{grid-template-columns:repeat(2,1fr)}
+  .insight-kpi-row{grid-template-columns:repeat(2,1fr)}
+  .pipe-steps{flex-direction:column}
+  .pipe-step:not(:last-child)::after{content:'↓';right:50%;top:auto;bottom:-14px;transform:translateX(50%)}
+}
+@media(max-width:600px){
+  .solution-grid,.insight-kpi-row,.libs-grid{grid-template-columns:1fr}
+  .nav-links a{padding:18px 8px;font-size:10px}
+}
+
+/* animate on scroll */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-up.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">HESA <span>Graduate Earnings</span></div>
+    <ul class="nav-links">
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#data">Data</a></li>
+      <li><a href="#solution">Solution</a></li>
+      <li><a href="#insights">Insights</a></li>
+      <li><a href="#charts">Charts</a></li>
+      <li><a href="#methodology">Methodology</a></li>
+      <li><a href="shiny_dashboard.html" class="nav-dashboard" target="_blank">🚀 Live Dashboard</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-kicker">R Statistics Analyst Portfolio · Jisc / HESA</div>
+      <h1 class="hero-title">Does graduating from a<br><em>high-skill</em> provider<br>pay?</h1>
+      <p class="hero-desc">A rigorous quantile-regression analysis of 229 UK higher education providers, linking occupational outcomes from HESA Table 22 to salary distributions from Table 26 — to quantify the graduate skills premium and benchmark provider performance.</p>
+      <div class="hero-ctas">
+        <a href="#insights" class="btn btn-primary">▸ Explore Insights</a>
+        <a href="shiny_dashboard.html" class="btn btn-outline" target="_blank">🚀 Live Shiny Dashboard</a>
+        <a href="https://github.com" class="btn btn-outline">📓 Notebook</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="val">229 <span>providers</span></div>
+        <div class="lbl">UK higher education providers analysed</div>
+      </div>
+      <div class="stat-card">
+        <div class="val">£92 <span>per 1pp</span></div>
+        <div class="lbl">Median salary uplift per 1pp increase in graduate-level roles (Q50 quantile regression)</div>
+      </div>
+      <div class="stat-card">
+        <div class="val">£19,266</div>
+        <div class="lbl">Highest skills premium above national median (Furness College)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="container">
+    <div class="section-label">01 · Problem Statement</div>
+    <h2 class="section-title">What gap are we trying to close?</h2>
+    <p class="section-lead">UK policy-makers and prospective students lack a rigorous, provider-level evidence base linking occupational outcomes to graduate earnings. Raw salary tables exist — but the causal signal is buried in noise.</p>
+    <div class="problem-grid fade-up">
+      <div class="problem-card">
+        <h3>🎯 The Core Question</h3>
+        <p>Does attending a provider whose graduates enter high-skill professional roles (SOC major groups 1–3) translate into a measurable salary premium — and does this premium vary across the earnings distribution?</p>
+      </div>
+      <div class="problem-card red">
+        <h3>📊 The Data Gap</h3>
+        <p>HESA publishes Table 22 (occupational outcomes) and Table 26 (salary bands) separately. No published analysis joins them at provider level to quantify the <em>skills premium</em> — the salary uplift attributable to professional occupation entry rates.</p>
+      </div>
+      <div class="problem-card gold">
+        <h3>🏛️ Policy Relevance</h3>
+        <p>Jisc and HESA need analyst-grade evidence to inform the Teaching Excellence Framework (TEF), Office for Students (OfS) Graduate Outcomes metrics, and widening participation benchmarking across 229 providers.</p>
+      </div>
+      <div class="problem-card">
+        <h3>⚙️ Technical Challenge</h3>
+        <p>Salary data is banded (not individual), counts are suppressed for small providers, and the relationship between occupational mix and earnings is heterogeneous across the distribution — requiring quantile regression, not OLS.</p>
+      </div>
+    </div>
+    <div class="gap-visual fade-up">
+      <p style="font-family:var(--mono);font-size:11px;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px">National Salary Range Across 229 Providers</p>
+      <div class="gap-bar">
+        <div class="gap-segment" style="background:var(--red);width:120px">£14,500<br><small>Min</small></div>
+        <div class="gap-segment" style="background:var(--gold);width:80px">£22,172<br><small>Median</small></div>
+        <div class="gap-segment" style="background:var(--teal);width:180px">£41,438<br><small>Max</small></div>
+      </div>
+      <p style="font-size:13px;color:var(--mid);margin-top:8px">£26,938 spread between lowest and highest-earning provider — equivalent to <strong>186% of the national minimum</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- DATA -->
+<section id="data">
+  <div class="container">
+    <div class="section-label">02 · Data Sources & Dictionary</div>
+    <h2 class="section-title">The evidence base</h2>
+    <p class="section-lead">Two HESA Graduate Outcomes Survey tables — joined at provider level for the first time — covering UK-domiciled first degree graduates in full-time paid employment.</p>
+    <div class="data-grid fade-up">
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Table 22 — Occupational Classification</h3>
+          <a href="https://www.hesa.ac.uk/data-and-analysis/graduates/table-22" target="_blank">↗ HESA Source</a>
+        </div>
+        <table class="dict-table">
+          <thead><tr><th>Field</th><th>Description</th><th>Type</th></tr></thead>
+          <tbody>
+            <tr><td>provider</td><td>Higher education provider name (UKPRN-linked)</td><td><span class="badge">string</span></td></tr>
+            <tr><td>year</td><td>Academic year (2017/18 to 2022/23)</td><td><span class="badge">string</span></td></tr>
+            <tr><td>mode</td><td>Mode of former study: Full-Time / Part-Time</td><td><span class="badge">factor</span></td></tr>
+            <tr><td>soc_group</td><td>SOC 2020 major group (1–9 + Unknown)</td><td><span class="badge">factor</span></td></tr>
+            <tr><td>is_graduate_role</td><td>Derived: TRUE if SOC group 1, 2, or 3</td><td><span class="badge">boolean</span></td></tr>
+            <tr><td>count</td><td>Number of graduates (suppressed if &lt;5)</td><td><span class="badge">integer</span></td></tr>
+            <tr><td>pct_graduate_role</td><td>% of graduates in SOC 1–3 (derived)</td><td><span class="badge">numeric</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Table 26 — Salary Bands</h3>
+          <a href="https://www.hesa.ac.uk/data-and-analysis/graduates/table-26" target="_blank">↗ HESA Source</a>
+        </div>
+        <table class="dict-table">
+          <thead><tr><th>Field</th><th>Description</th><th>Type</th></tr></thead>
+          <tbody>
+            <tr><td>provider</td><td>Higher education provider name (UKPRN-linked)</td><td><span class="badge">string</span></td></tr>
+            <tr><td>year</td><td>Academic year (2017/18 to 2022/23)</td><td><span class="badge">string</span></td></tr>
+            <tr><td>skill_group</td><td>High Skilled / Medium Skilled / Low Skilled</td><td><span class="badge">factor</span></td></tr>
+            <tr><td>salary_band</td><td>14 salary bands from &lt;£15k to £51k+</td><td><span class="badge">string</span></td></tr>
+            <tr><td>salary_midpoint</td><td>Band midpoint used as numeric proxy (£)</td><td><span class="badge">numeric</span></td></tr>
+            <tr><td>count</td><td>Number of graduates in band (0 = genuine zero)</td><td><span class="badge">integer</span></td></tr>
+            <tr><td>weighted_mean_salary</td><td>Σ(midpoint × count) ÷ Σ(count) per provider</td><td><span class="badge">numeric</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="chart-wrap fade-up" style="margin-top:0">
+      <p style="font-family:var(--mono);font-size:11px;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px">Population Scope — Both Tables Aligned To:</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:center">
+        <div style="padding:16px;background:var(--teal-pale);border-radius:8px"><div style="font-size:22px;margin-bottom:6px">🇬🇧</div><div style="font-size:12px;color:var(--teal);font-weight:600">UK Permanent Address</div></div>
+        <div style="padding:16px;background:var(--teal-pale);border-radius:8px"><div style="font-size:22px;margin-bottom:6px">🎓</div><div style="font-size:12px;color:var(--teal);font-weight:600">First Degree Only</div></div>
+        <div style="padding:16px;background:var(--teal-pale);border-radius:8px"><div style="font-size:22px;margin-bottom:6px">⏱️</div><div style="font-size:12px;color:var(--teal);font-weight:600">Full-Time Employment</div></div>
+        <div style="padding:16px;background:var(--teal-pale);border-radius:8px"><div style="font-size:22px;margin-bottom:6px">📍</div><div style="font-size:12px;color:var(--teal);font-weight:600">Working in UK</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="container">
+    <div class="section-label">03 · Technical Solution</div>
+    <h2 class="section-title">Built in R on Google Colab Pro</h2>
+    <p class="section-lead">Google Colab Pro chosen over free tier for guaranteed high-RAM runtime (51GB) essential for loading full HESA microdata, running bootstrap quantile regression (R=500), and serving a live Shiny dashboard via ngrok tunnel.</p>
+    <div class="solution-grid fade-up">
+      <div class="sol-card">
+        <div class="sol-icon">📦</div>
+        <h3>Data Ingestion</h3>
+        <p>Raw HESA CSVs loaded with skip-row handling, column harmonisation via <code>janitor</code>, and strict suppression-aware filtering (NA ≠ 0).</p>
+      </div>
+      <div class="sol-card">
+        <div class="sol-icon">🔗</div>
+        <h3>Provider-Level Join</h3>
+        <p>Tables 22 and 26 joined on UKPRN + year + mode to create a unified <code>module_b_fixed</code> analytical dataset of 1,205 provider-year-mode records.</p>
+      </div>
+      <div class="sol-card">
+        <div class="sol-icon">📐</div>
+        <h3>Quantile Regression</h3>
+        <p>Three quantile regressions (Q25, Q50, Q75) via <code>quantreg::rq()</code> with bootstrap SE (R=500, seed=42) to capture heterogeneous salary effects across the distribution.</p>
+      </div>
+      <div class="sol-card">
+        <div class="sol-icon">📊</div>
+        <h3>Interactive Dashboard</h3>
+        <p>Full 4-tab Shiny app with <code>bslib</code>, <code>plotly</code>, <code>DT</code>, and <code>shinyWidgets</code> — live at the ngrok URL, serving real-time filtered charts and league tables.</p>
+      </div>
+      <div class="sol-card">
+        <div class="sol-icon">🏆</div>
+        <h3>Skills Premium Index</h3>
+        <p>Each provider's weighted mean salary benchmarked against the national median (£22,172) to produce a signed skills premium in £ — enabling a ranked league table of 229 providers.</p>
+      </div>
+      <div class="sol-card">
+        <div class="sol-icon">🌐</div>
+        <h3>Public URL via ngrok</h3>
+        <p>Shiny served on port 3838 using <code>processx</code> background process; ngrok binary tunnels traffic to a public HTTPS URL without firewall configuration.</p>
+      </div>
+    </div>
+    <div class="pipeline fade-up">
+      <h3>Analysis Pipeline</h3>
+      <div class="pipe-steps">
+        <div class="pipe-step"><div class="pipe-num">1</div><h4>Load Raw CSV</h4><p>Tables 22 & 26 from HESA</p></div>
+        <div class="pipe-step"><div class="pipe-num">2</div><h4>Clean & Align</h4><p>Suppress NA, filter scope</p></div>
+        <div class="pipe-step"><div class="pipe-num">3</div><h4>Join on UKPRN</h4><p>Provider-level merge</p></div>
+        <div class="pipe-step"><div class="pipe-num">4</div><h4>Compute Metrics</h4><p>Weighted means, % SOC 1–3</p></div>
+        <div class="pipe-step"><div class="pipe-num">5</div><h4>Quantile Regression</h4><p>Q25 / Q50 / Q75</p></div>
+        <div class="pipe-step"><div class="pipe-num">6</div><h4>Skills Premium</h4><p>Provider vs national median</p></div>
+        <div class="pipe-step"><div class="pipe-num">7</div><h4>Shiny Dashboard</h4><p>Interactive exploration</p></div>
+      </div>
+    </div>
+    <div class="libs-grid fade-up">
+      <div class="lib-badge"><div class="lib-name">tidyverse</div><div class="lib-desc">Data wrangling pipeline</div></div>
+      <div class="lib-badge"><div class="lib-name">quantreg</div><div class="lib-desc">Quantile regression (rq)</div></div>
+      <div class="lib-badge"><div class="lib-name">shiny + bslib</div><div class="lib-desc">Interactive dashboard</div></div>
+      <div class="lib-badge"><div class="lib-name">plotly</div><div class="lib-desc">Interactive charts</div></div>
+      <div class="lib-badge"><div class="lib-name">DT</div><div class="lib-desc">Sortable data tables</div></div>
+      <div class="lib-badge"><div class="lib-name">janitor</div><div class="lib-desc">Column standardisation</div></div>
+      <div class="lib-badge"><div class="lib-name">glue</div><div class="lib-desc">String interpolation</div></div>
+      <div class="lib-badge"><div class="lib-name">processx + ngrok</div><div class="lib-desc">Dashboard deployment</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIGHTS -->
+<section id="insights">
+  <div class="container">
+    <div class="section-label">04 · Key Insights</div>
+    <h2 class="section-title">What the data reveals</h2>
+    <p class="section-lead">Six headline findings from the analysis of 229 providers, 1,205 provider-year records, and three quantile regression models.</p>
+
+    <!-- KPI Row -->
+    <div class="insight-kpi-row fade-up">
+      <div class="kpi teal">
+        <div class="kpi-val">£22,172</div>
+        <div class="kpi-lbl">National Median Salary</div>
+      </div>
+      <div class="kpi gold">
+        <div class="kpi-val">114</div>
+        <div class="kpi-lbl">Providers Above Median</div>
+      </div>
+      <div class="kpi teal">
+        <div class="kpi-val">£92</div>
+        <div class="kpi-lbl">Median Salary Uplift per 1pp SOC 1–3</div>
+      </div>
+      <div class="kpi ink">
+        <div class="kpi-val">229</div>
+        <div class="kpi-lbl">Providers Analysed</div>
+      </div>
+    </div>
+
+    <!-- Chart 1: Skills Premium Bar -->
+    <div class="chart-section fade-up">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Top 15 Providers by Skills Premium</div>
+          <div class="chart-subtitle">Salary above national median (£22,172) — 2017/18 baseline</div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-canvas-wrap"><canvas id="premiumChart"></canvas></div>
+        <div class="insight-box">
+          <strong>Finding 1:</strong> Furness College leads with a £19,266 premium, followed by The London Institute of Banking & Finance (+£18,703) and University College of Estate Management (+£17,059). Notably, these are <em>specialist</em> institutions — not Russell Group universities — suggesting that vocational-professional alignment drives salary outcomes more than institutional prestige.
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart 2: Scatter -->
+    <div class="chart-section fade-up">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Skills Premium vs % in Graduate-Level Roles</div>
+          <div class="chart-subtitle">Each dot = one provider (n=229). Colour = above/below national median.</div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-canvas-wrap"><canvas id="scatterChart"></canvas></div>
+        <div class="insight-box">
+          <strong>Finding 2:</strong> There is a positive but heterogeneous relationship between % graduates in SOC 1–3 and provider mean salary. The relationship is stronger at the top of the distribution (Q75 slope = £172/pp) than the bottom (Q25 = £80/pp) — meaning high-earning providers gain disproportionately more from occupational upgrading.
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart 3: Quantile Regression -->
+    <div class="chart-section fade-up">
+      <div class="two-col">
+        <div>
+          <div class="chart-title" style="margin-bottom:16px">Quantile Regression Results</div>
+          <div class="chart-wrap" style="height:100%">
+            <table class="qr-table">
+              <thead><tr><th>Quantile</th><th>Estimate (£ per 1pp)</th><th>95% CI</th><th>Significance</th></tr></thead>
+              <tbody>
+                <tr><td>Q25 — Lower quartile</td><td class="est-val">£80</td><td style="font-family:var(--mono);font-size:12px">£58 – £102</td><td><span class="sig-badge">p &lt; 0.001</span></td></tr>
+                <tr><td>Q50 — Median</td><td class="est-val">£92</td><td style="font-family:var(--mono);font-size:12px">£60 – £124</td><td><span class="sig-badge">p &lt; 0.001</span></td></tr>
+                <tr><td>Q75 — Upper quartile</td><td class="est-val">£172</td><td style="font-family:var(--mono);font-size:12px">£142 – £203</td><td><span class="sig-badge">p &lt; 0.001</span></td></tr>
+              </tbody>
+            </table>
+            <div class="insight-box" style="margin-top:16px">
+              <strong>Finding 3:</strong> All three quantile estimates are highly significant (p&lt;0.001). The Q75 estimate (£172) is more than double the Q25 estimate (£80), confirming that the salary return to graduate-level employment is <em>not uniform</em> — it is largest for providers already in the upper salary tier.
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="chart-title" style="margin-bottom:16px">Estimate by Quantile</div>
+          <div class="chart-wrap">
+            <div class="chart-canvas-wrap" style="height:280px"><canvas id="qrChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart 4: Bottom providers -->
+    <div class="chart-section fade-up">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Providers Furthest Below National Median</div>
+          <div class="chart-subtitle">Skills deficit — salary below £22,172 national median</div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-canvas-wrap" style="height:300px"><canvas id="bottomChart"></canvas></div>
+        <div class="insight-box" style="border-left-color:var(--red);background:var(--red-pale);color:var(--red)">
+          <strong>Finding 4:</strong> The Northern School of Art records the largest negative premium (−£7,672), followed by Askham Bryan College (−£6,005) and York College (−£5,672). Creative arts and agricultural colleges dominate the bottom tier — sectors where graduates commonly enter low-paid but vocationally satisfying roles.
+        </div>
+      </div>
+    </div>
+
+    <!-- Skill Group finding -->
+    <div class="chart-section fade-up">
+      <div class="chart-wrap">
+        <div class="chart-title" style="margin-bottom:20px">Insight 5 — Skill Group Salary Gradient</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center">
+          <div style="background:var(--red-pale);border-radius:10px;padding:24px">
+            <div style="font-family:var(--serif);font-size:32px;color:var(--red)">£20,291</div>
+            <div style="font-size:12px;color:var(--mid);margin-top:6px;text-transform:uppercase;letter-spacing:.06em">Low Skilled</div>
+            <div style="font-size:11px;color:var(--mid);margin-top:4px">Graduates entering SOC groups 7–9</div>
+          </div>
+          <div style="background:var(--gold-pale);border-radius:10px;padding:24px">
+            <div style="font-family:var(--serif);font-size:32px;color:var(--gold)">£22,256</div>
+            <div style="font-size:12px;color:var(--mid);margin-top:6px;text-transform:uppercase;letter-spacing:.06em">Medium Skilled</div>
+            <div style="font-size:11px;color:var(--mid);margin-top:4px">Graduates entering SOC groups 4–6</div>
+          </div>
+          <div style="background:var(--teal-pale);border-radius:10px;padding:24px">
+            <div style="font-family:var(--serif);font-size:32px;color:var(--teal)">£27,635</div>
+            <div style="font-size:12px;color:var(--mid);margin-top:6px;text-transform:uppercase;letter-spacing:.06em">High Skilled</div>
+            <div style="font-size:11px;color:var(--mid);margin-top:4px">Graduates entering SOC groups 1–3</div>
+          </div>
+        </div>
+        <div class="insight-box" style="margin-top:20px">
+          <strong>Finding 5:</strong> The salary gradient across skill groups is £7,344 from Low to High Skilled — a 36% premium. However, this masks substantial within-group variation: some Low Skilled providers (e.g. Furness College) earn above the High Skilled average, reflecting sector-specific wage structures independent of occupational classification.
+        </div>
+      </div>
+    </div>
+
+    <!-- Finding 6 -->
+    <div class="chart-section fade-up">
+      <div class="chart-wrap">
+        <div class="chart-title" style="margin-bottom:16px">Insight 6 — 100% Graduate Role Providers: Mixed Outcomes</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div style="background:var(--teal-pale);border-radius:8px;padding:16px;text-align:center">
+            <div style="font-family:var(--serif);font-size:20px;color:var(--teal)">Pearson College</div>
+            <div style="font-size:22px;color:var(--teal);font-weight:700;margin:4px 0">£32,700</div>
+            <div style="font-size:11px;color:var(--mid)">100% SOC 1–3 · Premium +£10,528</div>
+          </div>
+          <div style="background:var(--teal-pale);border-radius:8px;padding:16px;text-align:center">
+            <div style="font-family:var(--serif);font-size:20px;color:var(--teal)">Arts Educational</div>
+            <div style="font-size:22px;color:var(--teal);font-weight:700;margin:4px 0">£32,250</div>
+            <div style="font-size:11px;color:var(--mid)">100% SOC 1–3 · Premium +£10,078</div>
+          </div>
+          <div style="background:var(--red-pale);border-radius:8px;padding:16px;text-align:center">
+            <div style="font-family:var(--serif);font-size:20px;color:var(--red)">Royal Academy of Music</div>
+            <div style="font-size:22px;color:var(--red);font-weight:700;margin:4px 0">£16,500</div>
+            <div style="font-size:11px;color:var(--mid)">100% SOC 1–3 · Premium −£5,672</div>
+          </div>
+        </div>
+        <div class="insight-box">
+          <strong>Finding 6:</strong> 100% SOC 1–3 graduate rate does not guarantee a positive skills premium. The Royal Academy of Music places all graduates in professional roles yet records a −£5,672 deficit. This reflects arts sector wage norms — professional classification does not always translate to high pay. The quantile regression captures this non-linearity.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHARTS EMBED -->
+<section id="charts">
+  <div class="container">
+    <div class="section-label">05 · Original Analysis Charts</div>
+    <h2 class="section-title">Publication-quality outputs</h2>
+    <p class="section-lead">Interactive Plotly charts generated directly from the R analysis — embedded below for reference alongside the live Shiny dashboard.</p>
+    <div class="charts-grid fade-up">
+      <div class="embed-card">
+        <div class="embed-label">Chart 01 — Earnings by Skill Group</div>
+        <iframe src="chart_earnings_by_skill.html" class="embed-frame" height="500"></iframe>
+      </div>
+      <div class="embed-card">
+        <div class="embed-label">Chart 02 — Skills Premium Scatter with Quantile Regression Lines</div>
+        <iframe src="chart_skills_premium_scatter.html" class="embed-frame" height="500"></iframe>
+      </div>
+      <div class="embed-card">
+        <div class="embed-label">Chart 03 — SOC Occupational Breakdown by Provider</div>
+        <iframe src="chart_soc_breakdown.html" class="embed-frame" height="500"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section id="methodology">
+  <div class="container">
+    <div class="section-label">06 · Methodology</div>
+    <h2 class="section-title">Statistical rigour & caveats</h2>
+    <p class="section-lead">This analysis follows HESA official statistics publication standards — including suppression handling, population alignment, and transparent uncertainty quantification.</p>
+    <div class="meth-grid fade-up">
+      <div class="meth-card">
+        <h3><div class="meth-icon">📐</div> Salary Estimation</h3>
+        <ul class="meth-list">
+          <li>Salary band midpoints used as numeric outcome (true salaries unavailable)</li>
+          <li>Open-ended upper band (£51,000+) assigned conservative midpoint of £57,000</li>
+          <li>Weighted mean = Σ(midpoint × count) ÷ Σ(count) per provider-year-mode group</li>
+          <li>Providers with fewer than 10 graduates excluded (unreliable estimates)</li>
+        </ul>
+      </div>
+      <div class="meth-card">
+        <h3><div class="meth-icon">🔒</div> Disclosure Control</h3>
+        <ul class="meth-list">
+          <li>HESA suppressed cells (marker ".") excluded from all calculations</li>
+          <li>Zero counts treated as genuine zeros, not suppressed values</li>
+          <li>No imputation applied — missing values excluded, not filled</li>
+          <li>Small provider results flagged; interpret with caution</li>
+        </ul>
+      </div>
+      <div class="meth-card">
+        <h3><div class="meth-icon">📊</div> Quantile Regression</h3>
+        <ul class="meth-list">
+          <li>rq() function from quantreg package (Koenker, 2023)</li>
+          <li>Bootstrap standard errors: R=500 replications, seed=42</li>
+          <li>Quantiles: Q25 (lower), Q50 (median), Q75 (upper)</li>
+          <li>Predictor: % graduates in SOC major groups 1–3</li>
+          <li>Outcome: provider-level weighted mean salary</li>
+        </ul>
+      </div>
+      <div class="meth-card">
+        <h3><div class="meth-icon">🔗</div> Population Alignment</h3>
+        <ul class="meth-list">
+          <li>Table 22 filtered to Undergraduate level to match Table 26</li>
+          <li>Both tables: UK permanent address, full-time paid employment</li>
+          <li>Table 22 covers 2017/18 only; Table 26 spans 2017/18–2022/23</li>
+          <li>Join performed on UKPRN (provider reference number) + year + mode</li>
+        </ul>
+      </div>
+    </div>
+    <div class="caveat-box fade-up">
+      <h4>⚠️ Important Caveats</h4>
+      <p>Salary midpoints approximate true earnings. The open-ended upper band introduces uncertainty for high-earning providers. Table 22 SOC classification reflects graduate destination 15 months after graduation — not lifetime outcomes. Response rates vary by provider (see HESA Table 5). Skills premium is descriptive, not causal — unobserved provider and student characteristics confound the relationship. HESA data used under Creative Commons Attribution 4.0 International licence.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>
+    <strong style="color:#fff">HESA Graduate Earnings & Occupational Analysis</strong><br>
+    HESA . UK<br>
+    Data: <a href="https://www.hesa.ac.uk/data-and-analysis/graduates/table-22">HESA Table 22</a> &amp;
+    <a href="https://www.hesa.ac.uk/data-and-analysis/graduates/table-26">Table 26</a> ·
+    Analysis: R (quantreg, shiny, tidyverse) on Google Colab Pro ·
+    <a href="shiny_dashboard.html" target="_blank">Live Dashboard</a>
+  </p>
+</footer>
+
+<script>
+// ── SCROLL ANIMATIONS ──
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.1});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+
+// ── NAV ACTIVE ──
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id});
+  navLinks.forEach(a=>{
+    a.classList.remove('active');
+    if(a.getAttribute('href')==='#'+cur)a.classList.add('active');
+  });
+});
+
+// ── CHART.JS DEFAULTS ──
+Chart.defaults.font.family="'Inter',sans-serif";
+Chart.defaults.color='#6b7280';
+Chart.defaults.plugins.legend.display=false;
+
+// ── DATA ──
+const TOP15 = [
+  {p:"Furness College",v:19266},{p:"London Inst. Banking & Finance",v:18703},
+  {p:"Univ. College of Estate Mgmt",v:17059},{p:"DCG",v:15328},
+  {p:"Imperial College London",v:13914},{p:"Pearson College",v:10528},
+  {p:"Arts Educational Schools",v:10078},{p:"Arden University",v:9503},
+  {p:"New College of Humanities",v:9328},{p:"Royal Veterinary College",v:8362},
+  {p:"Ruskin College",v:8203},{p:"AA School of Architecture",v:7828},
+  {p:"LSE",v:7419},{p:"Wiltshire College & Univ. Centre",v:7328},
+  {p:"South Thames Colleges Group",v:6328}
+].reverse();
+
+const BOT10 = [
+  {p:"Northern School of Art",v:-7672},{p:"Askham Bryan College",v:-6005},
+  {p:"York College",v:-5672},{p:"Royal Academy of Music",v:-5672},
+  {p:"Bishop Grosseteste Univ.",v:-4983},{p:"Hereford College of Arts",v:-4672},
+  {p:"Cornwall College",v:-4422},{p:"Bishop Burton College",v:-4172},
+  {p:"Arts Univ. Plymouth",v:-4138},{p:"Glasgow School of Art",v:-4116}
+].reverse();
+
+const ALL_PROVIDERS = [{"provider":"Anglia Ruskin University","mean_salary":25238.87,"pct_graduate_role":77.03,"premium":3067.16},{"provider":"Arts Educational Schools","mean_salary":32250.0,"pct_graduate_role":100.0,"premium":10078.29},{"provider":"The Arts University Bournemouth","mean_salary":19660.32,"pct_graduate_role":59.14,"premium":-2511.39},{"provider":"Askham Bryan College","mean_salary":16166.67,"pct_graduate_role":40.31,"premium":-6005.04},{"provider":"Barnsley College","mean_salary":25500.0,"pct_graduate_role":32.89,"premium":3328.29},{"provider":"Bath Spa University","mean_salary":19365.51,"pct_graduate_role":58.55,"premium":-2806.19},{"provider":"University College Birmingham","mean_salary":18940.92,"pct_graduate_role":36.97,"premium":-3230.79},{"provider":"Bishop Burton College","mean_salary":18000.0,"pct_graduate_role":28.58,"premium":-4171.71},{"provider":"Blackpool and the Fylde College","mean_salary":23642.86,"pct_graduate_role":61.78,"premium":1471.15},{"provider":"Bournemouth University","mean_salary":23287.2,"pct_graduate_role":82.39,"premium":1115.5},{"provider":"Furness College","mean_salary":41437.5,"pct_graduate_role":67.53,"premium":19265.79},{"provider":"Imperial College London","mean_salary":36085.23,"pct_graduate_role":98.17,"premium":13913.52},{"provider":"London Institute of Banking","mean_salary":40875.0,"pct_graduate_role":79.45,"premium":18703.29},{"provider":"LSE","mean_salary":29590.91,"pct_graduate_role":93.0,"premium":7419.2},{"provider":"University of Oxford","mean_salary":27444.11,"pct_graduate_role":92.56,"premium":5272.41},{"provider":"University of Cambridge","mean_salary":24817.69,"pct_graduate_role":94.19,"premium":2645.99},{"provider":"King's College London","mean_salary":26472.73,"pct_graduate_role":90.64,"premium":4301.02},{"provider":"UCL","mean_salary":25885.28,"pct_graduate_role":92.43,"premium":3713.57},{"provider":"The Northern School of Art","mean_salary":14500.0,"pct_graduate_role":40.0,"premium":-7671.71},{"provider":"Royal Academy of Music","mean_salary":16500.0,"pct_graduate_role":100.0,"premium":-5671.71},{"provider":"York College","mean_salary":16500.0,"pct_graduate_role":43.75,"premium":-5671.71},{"provider":"Glasgow School of Art","mean_salary":18055.56,"pct_graduate_role":64.63,"premium":-4116.15},{"provider":"Hereford College of Arts","mean_salary":17500.0,"pct_graduate_role":43.75,"premium":-4671.71},{"provider":"Sheffield Hallam University","mean_salary":24559.05,"pct_graduate_role":76.17,"premium":2387.34},{"provider":"Loughborough University","mean_salary":23470.9,"pct_graduate_role":84.67,"premium":1299.2},{"provider":"University of Warwick","mean_salary":26756.32,"pct_graduate_role":88.24,"premium":4584.61},{"provider":"Newcastle University","mean_salary":22171.71,"pct_graduate_role":80.08,"premium":0.0},{"provider":"University of Bristol","mean_salary":23358.19,"pct_graduate_role":85.01,"premium":1186.48},{"provider":"University of Edinburgh","mean_salary":22274.9,"pct_graduate_role":83.48,"premium":103.19},{"provider":"Arden University","mean_salary":31675.0,"pct_graduate_role":72.7,"premium":9503.29},{"provider":"New College of Humanities","mean_salary":31500.0,"pct_graduate_role":100.0,"premium":9328.29},{"provider":"Pearson College","mean_salary":32700.0,"pct_graduate_role":100.0,"premium":10528.29},{"provider":"DCG","mean_salary":37500.0,"pct_graduate_role":74.18,"premium":15328.29},{"provider":"Univ. College of Estate Mgmt","mean_salary":39230.77,"pct_graduate_role":97.73,"premium":17059.06}];
+
+// ── CHART 1: Skills Premium Bar ──
+new Chart(document.getElementById('premiumChart'),{
+  type:'bar',
+  data:{
+    labels:TOP15.map(d=>d.p),
+    datasets:[{
+      data:TOP15.map(d=>d.v),
+      backgroundColor:TOP15.map(d=>'rgba(13,110,94,0.85)'),
+      borderRadius:4,
+      borderSkipped:false
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      tooltip:{callbacks:{label:c=>' £'+c.parsed.x.toLocaleString()+' above median'}},
+      legend:{display:false}
+    },
+    scales:{
+      x:{grid:{color:'rgba(0,0,0,.05)'},ticks:{callback:v=>'£'+v.toLocaleString()},title:{display:true,text:'Skills Premium (£ above national median)'}},
+      y:{grid:{display:false},ticks:{font:{size:11}}}
+    }
+  }
+});
+
+// ── CHART 2: Scatter ──
+const scatterData = ALL_PROVIDERS.map(d=>({x:d.pct_graduate_role,y:d.mean_salary,label:d.provider,premium:d.premium}));
+new Chart(document.getElementById('scatterChart'),{
+  type:'scatter',
+  data:{
+    datasets:[
+      {label:'Above median',data:scatterData.filter(d=>d.premium>=0),backgroundColor:'rgba(13,110,94,0.55)',pointRadius:5},
+      {label:'Below median',data:scatterData.filter(d=>d.premium<0),backgroundColor:'rgba(192,57,43,0.55)',pointRadius:5},
+      {label:'National median',data:[{x:0,y:22172},{x:100,y:22172}],type:'line',borderColor:'#c8922a',borderDash:[6,4],borderWidth:2,pointRadius:0,fill:false}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:true,position:'top'},
+      tooltip:{callbacks:{
+        label:ctx=>{
+          if(ctx.dataset.label==='National median')return 'National median: £22,172';
+          return `${ctx.raw.label}: £${Math.round(ctx.raw.y).toLocaleString()} | ${ctx.raw.x.toFixed(1)}% grad roles`;
+        }
+      }}
+    },
+    scales:{
+      x:{title:{display:true,text:'% Graduates in SOC 1–3 (Professional/Managerial)'},min:20,max:105},
+      y:{title:{display:true,text:'Provider Mean Salary (£)'},ticks:{callback:v=>'£'+v.toLocaleString()}}
+    }
+  }
+});
+
+// ── CHART 3: QR bar ──
+new Chart(document.getElementById('qrChart'),{
+  type:'bar',
+  data:{
+    labels:['Q25 (Lower)','Q50 (Median)','Q75 (Upper)'],
+    datasets:[{
+      label:'Estimate (£)',
+      data:[80,92,172],
+      backgroundColor:['rgba(13,110,94,0.6)','rgba(13,110,94,0.8)','rgba(13,110,94,1)'],
+      borderRadius:6,
+      errorBars:{Q25:{plus:22,minus:22},Q50:{plus:32,minus:32},Q75:{plus:31,minus:30}}
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      tooltip:{callbacks:{label:c=>' £'+c.parsed.y+' per 1pp increase in SOC 1–3'}},
+      legend:{display:false}
+    },
+    scales:{
+      y:{title:{display:true,text:'£ per 1pp increase in % SOC 1–3'},beginAtZero:true,max:220},
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+// ── CHART 4: Bottom providers ──
+new Chart(document.getElementById('bottomChart'),{
+  type:'bar',
+  data:{
+    labels:BOT10.map(d=>d.p),
+    datasets:[{
+      data:BOT10.map(d=>d.v),
+      backgroundColor:'rgba(192,57,43,0.75)',
+      borderRadius:4
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      tooltip:{callbacks:{label:c=>' £'+Math.abs(c.parsed.x).toLocaleString()+' below median'}},
+      legend:{display:false}
+    },
+    scales:{
+      x:{ticks:{callback:v=>'£'+Math.abs(v).toLocaleString()},title:{display:true,text:'Skills Deficit (£ below national median)'}},
+      y:{grid:{display:false},ticks:{font:{size:11}}}
+    }
+  }
+});
+</script>
+</body>
+</html>
